@@ -24,7 +24,11 @@ st.sidebar.title("News Article URLs 🔗")
 urls = []
 for i in range(3):
     url = st.sidebar.text_input(f"URL {i+1}")
-    urls.append(url)
+    if url.strip() != "":
+        urls.append(url)
+# for i in range(3):
+#     url = st.sidebar.text_input(f"URL {i+1}")
+#     urls.append(url)
 
 process_url_clicked = st.sidebar.button("Process URLs")
 
@@ -32,27 +36,30 @@ main_placeholder = st.empty()
 
 # ================= PROCESSING =================
 if process_url_clicked:
-    loader = UnstructuredURLLoader(urls=urls)
-    main_placeholder.text("Data Loading...Started...✅")
-    data = loader.load()
+    if not urls:
+        st.warning("Please enter at least one URL")
+    else:
+        loader = UnstructuredURLLoader(urls=urls)
+        main_placeholder.text("Data Loading...Started...✅")
+        data = loader.load()
 
-    text_splitter = RecursiveCharacterTextSplitter(
-        separators=['\n\n', '\n', '.', ','],
-        chunk_size=1000,
-    )
-    main_placeholder.text("Text Splitting...Started...✅")
-    docs = text_splitter.split_documents(data)
+        text_splitter = RecursiveCharacterTextSplitter(
+            separators=['\n\n', '\n', '.', ','],
+            chunk_size=1000,
+        )
+        main_placeholder.text("Text Splitting...Started...✅")
+        docs = text_splitter.split_documents(data)
 
-    embeddings = OpenAIEmbeddings(
-        api_key=api_key,
-        base_url="https://openrouter.ai/api/v1"
-    )
+        embeddings = OpenAIEmbeddings(
+            api_key=api_key,
+            base_url="https://openrouter.ai/api/v1"
+       )
 
-    vectorstore_openai = FAISS.from_documents(docs, embeddings)
-    main_placeholder.text("Embedding Done...✅")
-    time.sleep(2)
+        vectorstore_openai = FAISS.from_documents(docs, embeddings)
+        main_placeholder.text("Embedding Done...✅")
+        time.sleep(2)
 
-    vectorstore_openai.save_local("faiss_index")
+        vectorstore_openai.save_local("faiss_index")
 
 
 # ================= QUERY =================
