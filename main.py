@@ -7,9 +7,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import UnstructuredURLLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
-from key import api_key
 
-os.environ["OPENAI_API_KEY"] = api_key
+api_key = os.getenv("OPENAI_API_KEY")
 
 llm = ChatOpenAI(
     model="nvidia/nemotron-3-super-120b-a12b:free",
@@ -26,10 +25,7 @@ for i in range(3):
     url = st.sidebar.text_input(f"URL {i+1}")
     if url.strip() != "":
         urls.append(url)
-# for i in range(3):
-#     url = st.sidebar.text_input(f"URL {i+1}")
-#     urls.append(url)
-
+        
 process_url_clicked = st.sidebar.button("Process URLs")
 
 main_placeholder = st.empty()
